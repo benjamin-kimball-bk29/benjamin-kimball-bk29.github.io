@@ -19,7 +19,7 @@
   <button type="button" onclick="presentPage('one'),updateParagraph('one'),updateHighlights('one')">Page 1</button>
   <button type="button" onclick="presentPage('two'),updateParagraph('two'),updateHighlights('two')">Page 2</button>
   <button type="button" onclick="presentPage('three'),updateParagraph('three'),updateHighlights('three')">Page 3</button>
-  <p>Fighting score on x-axis, Puzzle score on y-axis. Mouse over points for more information.</p>
+  <p>Fighting score on x-axis, puzzle score on y-axis. Mouse over points for more information.</p>
   <a href="https://corp.ign.com/review-practices">Learn more about IGN Scores</a>
 
   <div id="tooltip"></div>
@@ -30,7 +30,9 @@
   //console.log(data)
   var x = d3.scaleLinear().domain([4,9]).range([0,400]);
   var y = d3.scaleLinear().domain([4,9]).range([400,0]);
-  
+
+  //this whole tooltip var came from https://chartio.com/resources/tutorials/how-to-show-data-on-mouseover-in-d3js/
+  //other tooltip code shown closely resembles their example, but has been changed to fit the purpose of my narrative visualization
 var tooltip = d3.select("body")
     .append("div")
     .style("position", "absolute")
@@ -47,32 +49,35 @@ var tooltip = d3.select("body")
       .attr('cy',function(d,i) {return y(d.Puzzle);})
       .attr('id',function(d,i) {return d.Platform;})
       .attr('fill','blue')
+      //.attr('fill','rgb(119, 204, 232)')
       .attr('r',5)
-      .on("mouseover", function(d){tooltip.text(d.Platform + ' with ' + 
-      Number.parseFloat(d.Fighting).toFixed(2) + ' fighting score and ' + 
+      .on("mouseover", function(d){tooltip.text(d.Platform + ' with ' +
+      Number.parseFloat(d.Fighting).toFixed(2) + ' fighting score and ' +
       Number.parseFloat(d.Puzzle).toFixed(2) + ' puzzle score'); return tooltip.style("visibility", "visible");})
       .on("mousemove", function(){return tooltip.style("top", (d3.event.pageY-10)+"px").style("left",(d3.event.pageX+10)+"px");})
       .on("mouseout", function(){return tooltip.style("visibility", "hidden");});
-  
+
   d3.select("svg").append("g").attr("transform", "translate(" +50+","+50+")")
   .call(d3.axisLeft(y));
   d3.select("svg").append("g").attr("transform", "translate("+50+","+450+")")
   .call(d3.axisBottom(x));
-  
+
   presentPage('one');
   updateParagraph('one');
   updateHighlights('one');
 
-  console.log("hello console")
+  //console.log("hello console")
   }
 
 
-// A function that update the color circle
 var presentPage = function(pageNumber){
     d3.select("#first_ann").remove();
     d3.select("#second_ann").remove();
   var x = d3.scaleLinear().domain([4,9]).range([0,400]);
   var y = d3.scaleLinear().domain([4,9]).range([400,0]);
+
+  //the following const code and annotation calls follows the pattern displayed at
+  // https://d3-graph-gallery.com/graph/custom_annotation.html very closely
     const annotation_low_fighting = [
   {
     note: {
@@ -189,10 +194,7 @@ var presentPage = function(pageNumber){
   d3.select("svg").append("g").attr("id","second_ann").call(make_high_both_two)
   }
 }
-var changeColor = function(color){
-  myCircle
-    .style("fill", color)
-}
+
 var updateParagraph = function(pageNumber){
     if (pageNumber == 'one'){
         d3.select('h3').text("Page 1: Low Fighting Scores");
@@ -206,14 +208,17 @@ var updateParagraph = function(pageNumber){
     }
     else if (pageNumber == 'two'){
         d3.select('h3').text("Page 2: Low Puzzle Scores");
-        d3.select("p").text("The points in dark blue shown below show the lowest rated platforms for puzzle games. Customers "
-        + "looking to play puzzle games may decide to avoid these for other options.")
+        d3.select("p").text("The points in dark blue shown below show the lowest rated platforms for puzzle games. Puzzle games in general "
+        + "are very different from fighting games, requiring distinct capabilities from the platform they are played on. The platforms highlighted here "
+        + "are not necessarily bad at other genres, but customers looking to primarily play puzzle games may decide to avoid these platforms in favor of other options.")
     }
     else if (pageNumber == 'three'){
         d3.select('h3').text("Page 3: Highest Combined Scores");
         d3.select("p").text("For customers looking to buy gaming platforms that perform well in both fighting and puzzle "
         + "games, the blue dots shown below represent the highest scoring platforms across both categories. Customers looking "
-        + "to play both fighting and puzzle games may choose one of these in order to maximize their experience in both genres.")
+        + "to play both fighting and puzzle games may choose one of these in order to maximize their experience in both genres. While there "
+        + "are certainly other factors to consider when purchasing a platform, these particular platforms show high versatility in working between "
+        + "two very different gaming genres.")
     }
 }
 var updateHighlights = function(pageNumber){
@@ -243,4 +248,3 @@ var updateHighlights = function(pageNumber){
   </script>
   </body>
   </html>
-  
