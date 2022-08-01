@@ -1,29 +1,246 @@
 <!DOCTYPE html>
-<html>
 <script src='https://d3js.org/d3.v5.min.js'></script>
-<body>
-<svg width=150 height=300>
-</svg>
-<script>
-xdomain = [0,42];
-xrange = [0,100];
-ydomain = [5,0];
-yrange = [250,100];
-cdomain = [0,42];
-crange = ['blue','orange'];
-xs = d3.scaleLinear().domain(xdomain).range(xrange);
-ys = d3.scaleLinear().domain(ydomain).range(yrange);
-cs = d3.scaleLinear().domain(cdomain).range(crange);
-d3.select('svg')
-  .selectAll('rect')
-  .data([4,8,15,16,23,42])
-  .enter()
-  .append('rect')
-    .attr('x',20)
-    .attr('y',function(d,i) {return ys(i);})
-    .attr('width',function(d,i) {return xs(d);})
-    .attr('height',10)
-    .style('fill',function(d,i) {return cs(d);});
-</script>
-</body>
-</html>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/d3-annotation/2.5.1/d3-annotation.min.js'></script>
+
+<html>
+  <style> circle {stroke: black;}
+  </style>
+  <div>
+    <h1></h1>
+  </div>
+  <div>
+    <h3></h3>
+  </div>
+  <div>
+    <p></p>
+  </div>
+  <body onload='init()'>
+  <svg width=500 height=500> </svg>
+  <button type="button" onclick="presentPage('one'),updateParagraph('one'),updateHighlights('one')">Page 1</button>
+  <button type="button" onclick="presentPage('two'),updateParagraph('two'),updateHighlights('two')">Page 2</button>
+  <button type="button" onclick="presentPage('three'),updateParagraph('three'),updateHighlights('three')">Page 3</button>
+  <p>Fighting score on x-axis, Puzzle score on y-axis. Mouse over points for more information.</p>
+  <a href="https://corp.ign.com/review-practices">Learn more about IGN Scores</a>
+
+  <div id="tooltip"></div>
+  <script>
+  async function init() {
+    d3.select("h1").text("Analysis of Gaming Platforms")
+  const data = await d3.csv('https://benjamin-kimball-bk29.github.io/ign_scores.csv');
+  //console.log(data)
+  var x = d3.scaleLinear().domain([4,9]).range([0,400]);
+  var y = d3.scaleLinear().domain([4,9]).range([400,0]);
+  
+var tooltip = d3.select("body")
+    .append("div")
+    .style("position", "absolute")
+    .style("z-index", "10")
+    .style("visibility", "hidden")
+    .style("background", "white")
+    .text("a simple tooltip");
+
+  d3.select("svg").append("g").attr("transform", "translate(" +50+","+50+")").selectAll('circle')
+    .data(data)
+    .enter()
+    .append('circle')
+      .attr('cx',function(d,i) {return x(d.Fighting);})
+      .attr('cy',function(d,i) {return y(d.Puzzle);})
+      .attr('id',function(d,i) {return d.Platform;})
+      .attr('fill','blue')
+      .attr('r',5)
+      .on("mouseover", function(d){tooltip.text(d.Platform + ' with ' + 
+      Number.parseFloat(d.Fighting).toFixed(2) + ' fighting score and ' + 
+      Number.parseFloat(d.Puzzle).toFixed(2) + ' puzzle score'); return tooltip.style("visibility", "visible");})
+      .on("mousemove", function(){return tooltip.style("top", (d3.event.pageY-10)+"px").style("left",(d3.event.pageX+10)+"px");})
+      .on("mouseout", function(){return tooltip.style("visibility", "hidden");});
+  
+  d3.select("svg").append("g").attr("transform", "translate(" +50+","+50+")")
+  .call(d3.axisLeft(y));
+  d3.select("svg").append("g").attr("transform", "translate("+50+","+450+")")
+  .call(d3.axisBottom(x));
+  
+  presentPage('one');
+  updateParagraph('one');
+  updateHighlights('one');
+
+  console.log("hello console")
+  }
+
+
+// A function that update the color circle
+var presentPage = function(pageNumber){
+    d3.select("#first_ann").remove();
+    d3.select("#second_ann").remove();
+  var x = d3.scaleLinear().domain([4,9]).range([0,400]);
+  var y = d3.scaleLinear().domain([4,9]).range([400,0]);
+    const annotation_low_fighting = [
+  {
+    note: {
+      label: "The game boy color received the lowest IGN sore for fighting games",
+      title: "Game Boy Color",
+      align: "middle",
+      wrap: 200,
+      padding: 5
+    },
+    color: ["#69b3a2"],
+    x: x(4.5) + 50,
+    y: y(6.58333333333333) + 50,
+    dy: y(6.58333333333333) - 70,
+    dx: x(4.5) + 20
+  }
+  ]
+  const annotation_low_fighting_two = [
+  {
+    note: {
+      label: "The Nintendo 64 received the second lowest IGN sore for fighting games",
+      title: "Nintendo 64",
+      align: "middle",
+      wrap: 200,
+      padding: 5
+    },
+    color: ["#69b3a2"],
+    x: x(5.68124999999999) + 50,
+    y: y(7.46153846153846) + 50,
+    dy: y(7.46153846153846) - 170,
+    dx: x(5.68124999999999) - 170
+  }
+  ]
+  const annotation_low_puzzle = [
+  {
+    note: {
+      label: "The Xbox received the lowest IGN sore for puzzle games",
+      title: "Xbox",
+      align: "middle",
+      wrap: 200,
+      padding: 5
+    },
+    color: ["#69b3a2"],
+    x: x(7.02962962962963) + 50,
+    y: y(5.125) + 50,
+    dy: y(5.125) - 300,
+    dx: x(7.02962962962963) - 370
+  }
+  ]
+  const annotation_low_puzzle_two = [
+  {
+    note: {
+      label: "The GameCube received the second lowest IGN sore for puzzle games",
+      title: "GameCube",
+      align: "middle",
+      wrap: 200,
+      fontSize: 500,
+      padding: 5
+    },
+    color: ["#69b3a2"],
+    x: x(7.42222222222222) + 50,
+    y: y(6.13333333333333) + 50,
+    dy: y(6.13333333333333) - 170,
+    dx: x(7.42222222222222) - 200
+  }
+  ]
+  const annotation_high_both = [
+  {
+    note: {
+      label: "The Dreamcast received the highest combined fighting and puzzle IGN scores",
+      title: "Dreamcast",
+      align: "middle",
+      wrap: 200,
+      padding: 5
+    },
+    color: ["#69b3a2"],
+    x: x(8.2) + 50,
+    y: y(8.08888888888888) + 50,
+    dy: y(8.08888888888888) + 100,
+    dx: x(8.2) - 350
+  }
+  ]
+  const annotation_high_both_two = [
+  {
+    note: {
+      label: "The Playstation Vita received the second highest combined fighting and puzzle IGN scores",
+      title: "Playstation Vita",
+      align: "middle",
+      wrap: 200,
+      padding: 5
+    },
+    color: ["#69b3a2"],
+    x: x(7.52727272727272) + 50,
+    y: y(8.25) + 50,
+    dy: y(8.25) - 70,
+    dx: x(7.52727272727272) - 450
+  }
+  ]
+    const make_low_fighting = d3.annotation().annotations(annotation_low_fighting);
+  const make_low_fighting_two = d3.annotation().annotations(annotation_low_fighting_two);
+  const make_low_puzzle = d3.annotation().annotations(annotation_low_puzzle);
+  const make_low_puzzle_two = d3.annotation().annotations(annotation_low_puzzle_two);
+  const make_high_both = d3.annotation().annotations(annotation_high_both);
+  const make_high_both_two= d3.annotation().annotations(annotation_high_both_two);
+  if(pageNumber == "one"){
+    d3.select("svg").append("g").attr("id","first_ann").call(make_low_fighting)
+  d3.select("svg").append("g").attr("id","second_ann").call(make_low_fighting_two)
+  }
+  else if(pageNumber == "two"){
+    d3.select("svg").append("g").attr("id","first_ann").call(make_low_puzzle)
+  d3.select("svg").append("g").attr("id","second_ann").call(make_low_puzzle_two)
+  }
+  else if(pageNumber == "three"){
+    d3.select("svg").append("g").attr("id","first_ann").call(make_high_both)
+  d3.select("svg").append("g").attr("id","second_ann").call(make_high_both_two)
+  }
+}
+var changeColor = function(color){
+  myCircle
+    .style("fill", color)
+}
+var updateParagraph = function(pageNumber){
+    if (pageNumber == 'one'){
+        d3.select('h3').text("Page 1: Low Fighting Scores");
+        d3.select("p").text("Fighting and puzzle games are two of the" +
+        " most popular types of video games across a variety of different platforms. Customers looking to purchase new videogame platforms " +
+        "can make better decisions when they consider their favorite genre of gaming. This visualization's purpose is to plot IGN scores "
+        + "(see below for link to more details) for fighting and puzzle games played across different platforms in an effort to aid in "
+        + "purchasing decisions. Pictured below in the dark blue dots are the platforms studied that have the lowest scores for fighting games. "
+        + "Customers looking to play fighting games on their platform may want to avoid them. Click on another page number to explore further, "
+        + "or mouse over individual points for more details.");
+    }
+    else if (pageNumber == 'two'){
+        d3.select('h3').text("Page 2: Low Puzzle Scores");
+        d3.select("p").text("The points in dark blue shown below show the lowest rated platforms for puzzle games. Customers "
+        + "looking to play puzzle games may decide to avoid these for other options.")
+    }
+    else if (pageNumber == 'three'){
+        d3.select('h3').text("Page 3: Highest Combined Scores");
+        d3.select("p").text("For customers looking to buy gaming platforms that perform well in both fighting and puzzle "
+        + "games, the blue dots shown below represent the highest scoring platforms across both categories. Customers looking "
+        + "to play both fighting and puzzle games may choose one of these in order to maximize their experience in both genres.")
+    }
+}
+var updateHighlights = function(pageNumber){
+    d3.selectAll('circle').attr('fill-opacity', .2);
+    if (pageNumber == 'one'){
+        d3.select('#GameBoyColor').transition().duration(2000).delay(100).attr('fill-opacity', 1);
+        d3.select('#Nintendo64').transition().duration(2000).delay(100).attr('fill-opacity', 1);
+        d3.select('#iPhone').transition().duration(2000).delay(100).attr('fill-opacity', 1);
+        d3.select('#GameBoyAdvance').transition().duration(2000).delay(100).attr('fill-opacity', 1);
+        d3.select('#NintendoDS').transition().duration(2000).delay(100).attr('fill-opacity', 1);
+    }
+    else if (pageNumber == 'two'){
+        d3.select('#Xbox').transition().duration(2000).delay(100).attr('fill-opacity', 1);
+        d3.select('#GameCube').transition().duration(2000).delay(100).attr('fill-opacity', 1);
+        d3.select('#PlayStation2').transition().duration(2000).delay(100).attr('fill-opacity', 1);
+        d3.select('#Wii').transition().duration(2000).delay(100).attr('fill-opacity', 1);
+        d3.select('#GameBoyAdvance').transition().duration(2000).delay(100).attr('fill-opacity', 1);
+    }
+    else if (pageNumber == 'three'){
+        d3.select('#Dreamcast').transition().duration(2000).delay(100).attr('fill-opacity', 1);
+        d3.select('#PlayStationVita').transition().duration(2000).delay(100).attr('fill-opacity', 1);
+        d3.select('#XboxOne').transition().duration(2000).delay(100).attr('fill-opacity', 1);
+        d3.select('#PlayStation3').transition().duration(2000).delay(100).attr('fill-opacity', 1);
+        d3.select('#Xbox360').transition().duration(2000).delay(100).attr('fill-opacity', 1);
+    }
+}
+  </script>
+  </body>
+  </html>
+  
